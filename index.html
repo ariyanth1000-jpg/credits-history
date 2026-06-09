@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Credits Search</title>
+
+<style>
+*{
+  box-sizing:border-box;
+}
+
+html,body{
+  margin:0;
+  padding:0;
+  width:100%;
+  min-height:100vh;
+  overflow-x:hidden;
+}
+
+body{
+  font-family:Arial, sans-serif;
+  color:#0f172a;
+  padding:10px;
+  background:#ffffff;
+}
+
+body::before{
+  content:"";
+  position:fixed;
+  inset:-40%;
+  z-index:-2;
+  background:
+    radial-gradient(circle at 20% 30%, rgba(255,0,150,.28), transparent 30%),
+    radial-gradient(circle at 80% 20%, rgba(0,200,255,.28), transparent 32%),
+    radial-gradient(circle at 50% 80%, rgba(34,197,94,.25), transparent 35%),
+    radial-gradient(circle at 10% 90%, rgba(255,200,0,.25), transparent 30%);
+  filter:blur(35px);
+  animation:waterMove 10s ease-in-out infinite alternate;
+}
+
+body::after{
+  content:"";
+  position:fixed;
+  inset:0;
+  z-index:-1;
+  background:linear-gradient(120deg,rgba(255,255,255,.96),rgba(255,255,255,.72),rgba(255,255,255,.92));
+  backdrop-filter:blur(10px);
+}
+
+@keyframes waterMove{
+  0%{transform:translate(-4%,-3%) scale(1);}
+  50%{transform:translate(4%,3%) scale(1.08) rotate(8deg);}
+  100%{transform:translate(-2%,5%) scale(1.04) rotate(-6deg);}
+}
+
+.topIcon{
+  position:fixed;
+  top:10px;
+  right:10px;
+  width:40px;
+  height:40px;
+  border-radius:50%;
+  border:1px solid rgba(255,255,255,.65);
+  background:linear-gradient(135deg,#22c55e,#06b6d4,#8b5cf6);
+  color:white;
+  font-size:18px;
+  z-index:999;
+  cursor:pointer;
+  box-shadow:0 10px 25px rgba(14,165,233,.35);
+}
+
+.box{
+  width:100%;
+  max-width:920px;
+  margin:55px auto 0;
+  background:rgba(255,255,255,.78);
+  backdrop-filter:blur(18px);
+  padding:12px;
+  border-radius:0;
+  border:1px solid rgba(255,255,255,.85);
+  box-shadow:0 20px 50px rgba(15,23,42,.16);
+}
+
+h2{
+  margin:0 0 12px;
+  text-align:center;
+  font-size:clamp(16px,4vw,26px);
+  color:#0f172a;
+}
+
+.searchArea{
+  margin-bottom:12px;
+}
+
+input{
+  width:100%;
+  padding:12px;
+  font-size:clamp(14px,3.5vw,16px);
+  border:none;
+  outline:none;
+  border-radius:0;
+  background:rgba(255,255,255,.95);
+  color:#0f172a;
+  box-shadow:inset 0 0 0 1px #cbd5e1;
+}
+
+.resultItem{
+  width:100%;
+  max-width:100%;
+  margin-top:8px;
+  padding:8px 7px;
+  background:linear-gradient(135deg,#ffffff,#ecfeff,#f0fdf4);
+  color:#064e3b;
+  border:1px solid rgba(45,212,191,.65);
+  border-radius:0;
+  font-weight:800;
+  text-align:center;
+  line-height:1.15;
+  box-shadow:0 6px 16px rgba(14,165,233,.12);
+
+  white-space:nowrap;
+  overflow-x:auto;
+  overflow-y:hidden;
+  text-overflow:unset;
+
+  font-size:clamp(7.5px,2.15vw,14px);
+  letter-spacing:-0.35px;
+
+  -webkit-overflow-scrolling:touch;
+  scrollbar-width:thin;
+}
+
+.resultItem::-webkit-scrollbar{
+  height:4px;
+}
+
+.resultItem::-webkit-scrollbar-thumb{
+  background:#38bdf8;
+  border-radius:0;
+}
+
+.error{
+  margin-top:12px;
+  padding:10px;
+  background:#fee2e2;
+  color:#991b1b;
+  border-radius:0;
+  text-align:center;
+  font-weight:bold;
+  font-size:clamp(12px,3vw,15px);
+}
+
+.loading{
+  margin-top:12px;
+  padding:10px;
+  background:#dcfce7;
+  color:#166534;
+  border-radius:0;
+  text-align:center;
+  font-weight:bold;
+  font-size:clamp(12px,3vw,15px);
+}
+
+@media(max-width:420px){
+  body{
+    padding:7px;
+  }
+
+  .topIcon{
+    width:38px;
+    height:38px;
+    font-size:17px;
+  }
+
+  .box{
+    margin-top:52px;
+    padding:9px;
+    border-radius:0;
+  }
+
+  .resultItem{
+    padding:7px 5px;
+    font-size:clamp(7px,2.05vw,11px);
+    letter-spacing:-0.55px;
+  }
+}
+
+@media(max-width:340px){
+  .resultItem{
+    font-size:6.8px;
+    letter-spacing:-0.65px;
+    padding:6px 4px;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<button class="topIcon" onclick="toggleSearchBox()">⚙︎</button>
+
+<div class="box">
+
+<h2>ꕤ Your Credits History 🔔</h2>
+
+<div class="searchArea" id="searchArea">
+  <input type="text" id="studentId" placeholder="🛡️ Security Check Required">
+</div>
+
+<div id="result"></div>
+
+</div>
+
+<script>
+const API_URL = "https://script.google.com/macros/s/AKfycbwOiNS5ISa9IsVZp5VX01ij5uPVFVSDCY2VOn0apDUNeQasVJabT2VwD3J3kUR_JGE6wg/exec";
+
+const studentInput = document.getElementById("studentId");
+const searchArea = document.getElementById("searchArea");
+const resultBox = document.getElementById("result");
+
+let searchTimer = null;
+
+window.onload = function(){
+
+  const savedId = localStorage.getItem("savedStudentId");
+  const isHidden = localStorage.getItem("searchBoxHidden");
+
+  if(savedId){
+    studentInput.value = savedId;
+  }
+
+  if(isHidden === "yes"){
+    searchArea.style.display = "none";
+  }else{
+    searchArea.style.display = "block";
+  }
+
+  if(savedId){
+    autoSearch(savedId);
+  }
+};
+
+studentInput.addEventListener("input", function(){
+
+  const id = studentInput.value.trim();
+
+  localStorage.setItem("savedStudentId", id);
+
+  clearTimeout(searchTimer);
+
+  searchTimer = setTimeout(function(){
+    if(id !== ""){
+      autoSearch(id);
+    }else{
+      resultBox.innerHTML = "";
+    }
+  }, 500);
+});
+
+function toggleSearchBox(){
+
+  if(searchArea.style.display === "none"){
+    searchArea.style.display = "block";
+    localStorage.setItem("searchBoxHidden", "no");
+    studentInput.focus();
+  }else{
+    searchArea.style.display = "none";
+    localStorage.setItem("searchBoxHidden", "yes");
+  }
+}
+
+function autoHideSearchBox(){
+  searchArea.style.display = "none";
+  localStorage.setItem("searchBoxHidden", "yes");
+}
+
+function autoSearch(id){
+
+  resultBox.innerHTML =
+    '<div class="loading">Credits History Cheaking...</div>';
+
+  fetch(API_URL + "?id=" + encodeURIComponent(id))
+  .then(res => res.json())
+  .then(data => {
+
+    if(!data.found){
+      resultBox.innerHTML =
+        '<div class="error">⦸ Incorrect Password ⚠︎</div>';
+      return;
+    }
+
+    autoHideSearchBox();
+
+    if(data.results.length === 0){
+      resultBox.innerHTML =
+        '<div class="error">No Credits Found</div>';
+      return;
+    }
+
+    let html = "";
+
+    data.results.forEach(item => {
+      html += `
+        <div class="resultItem">
+          You are credited ${item.date} ➤ ${item.value} × ${item.rate} = ${item.tk} TK | ${Number(item.usdt).toFixed(3)} $ USDT
+        </div>
+      `;
+    });
+
+    resultBox.innerHTML = html;
+
+  })
+  .catch(() => {
+    resultBox.innerHTML =
+      '<div class="error">Connection Error</div>';
+  });
+}
+</script>
+
+</body>
+</html>
